@@ -53,11 +53,11 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
 
   if (status === "done") {
     return (
-      <section className="mt-10 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-        <p className="text-lg font-semibold text-emerald-900">
+      <section className="card mt-12 animate-fade-up bg-soft-green/60 p-7 text-center">
+        <p className="text-lg font-semibold text-black">
           Saved. Your result is on its way to {email}.
         </p>
-        <p className="mt-1 text-sm text-emerald-700">
+        <p className="mt-1 text-sm text-zinc-600">
           Keep this page open if you would like to read through the details again.
         </p>
       </section>
@@ -65,13 +65,13 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
   }
 
   return (
-    <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
-      <h2 className="text-xl font-bold text-slate-900">Save your result</h2>
-      <p className="mt-1 text-sm text-slate-500">
+    <section className="card mt-12 animate-fade-up p-7" style={{ animationDelay: "0.2s" }}>
+      <h2 className="text-xl font-bold text-black">Save your result</h2>
+      <p className="mt-1 text-sm text-zinc-500">
         Optional. Drop your email to keep this recommendation, and we will send it
         to you. You have already seen everything — this changes nothing.
       </p>
-      <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
+      <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row">
         <input
           type="email"
           value={email}
@@ -80,13 +80,13 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
             if (status === "error") setStatus("idle");
           }}
           placeholder="you@example.com"
-          className="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+          className="flex-1 rounded-xl border border-black/15 px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-black/10"
           aria-label="Email address"
         />
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="rounded-xl bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-indigo-700 disabled:bg-slate-300"
+          className="btn-primary"
         >
           {status === "submitting" ? "Saving…" : "Email it to me"}
         </button>

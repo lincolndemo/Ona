@@ -6,13 +6,23 @@ import { useEffect, useMemo, useState } from "react";
 import { Landing } from "./components/Landing";
 import { Assessment } from "./components/Assessment";
 import { Recommendation } from "./components/Recommendation";
+import { Flags } from "./components/Flags";
 import { SkillsGap } from "./components/SkillsGap";
+import { Roadmap } from "./components/Roadmap";
+import { Curriculum } from "./components/Curriculum";
+import { BrandingCoach } from "./components/BrandingCoach";
+import { BrandingPage } from "./components/BrandingPage";
+import { OpportunityScanner } from "./components/OpportunityScanner";
 import { NextStep } from "./components/NextStep";
 import { EmailCapture } from "./components/EmailCapture";
 import type { UserAnswers } from "./data/types";
 import { topMatch } from "./engine/match";
 import { buildReasoning } from "./engine/reasoning";
 import { computeGap } from "./engine/gap";
+import { buildFlags } from "./engine/flags";
+import { buildRoadmap } from "./engine/roadmap";
+import { buildCurriculum } from "./engine/curriculum";
+import { buildBranding } from "./engine/branding";
 import {
   clearProgress,
   loadAnswers,
@@ -21,7 +31,12 @@ import {
   saveQuestionIndex,
 } from "./storage";
 
-type Stage = "landing" | "assessment" | "result";
+type Stage =
+  | "landing"
+  | "assessment"
+  | "result"
+  | "branding"
+  | "opportunities";
 
 type Answers = Record<string, unknown>;
 
@@ -69,6 +84,28 @@ export default function App() {
         onStart={handleStartFresh}
         hasProgress={hasProgress}
         onResume={handleResume}
+        onOpenBranding={() => setStage("branding")}
+        onOpenOpportunities={() => setStage("opportunities")}
+      />
+    );
+  }
+
+  if (stage === "branding") {
+    return (
+      <BrandingPage
+        answers={answers}
+        onHome={() => setStage("landing")}
+        onStart={handleStartFresh}
+      />
+    );
+  }
+
+  if (stage === "opportunities") {
+    return (
+      <OpportunityScanner
+        answers={answers}
+        onHome={() => setStage("landing")}
+        onStart={handleStartFresh}
       />
     );
   }
@@ -96,28 +133,39 @@ function Result({
   answers: UserAnswers;
   onStartOver: () => void;
 }) {
-  // Deterministic: same answers always yield the same match, reasoning, and gap.
-  const { scored, reasoning, gap } = useMemo(() => {
+  // Deterministic: same answers always yield the same match, reasoning, gap,
+  // flags, and roadmap.
+  const { scored, reasoning, gap, flags, roadmap, curriculum, branding } =
+    useMemo(() => {
     const scored = topMatch(answers);
+    const gap = computeGap(answers, scored.career);
     return {
       scored,
+      gap,
       reasoning: buildReasoning(answers, scored),
-      gap: computeGap(answers, scored.career),
+      flags: buildFlags(answers, scored.career, gap),
+      roadmap: buildRoadmap(answers, scored.career, gap),
+      curriculum: buildCurriculum(scored.career, gap),
+      branding: buildBranding(scored.career, gap),
     };
   }, [answers]);
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       <Recommendation career={scored.career} reasoning={reasoning} />
+      <Flags flags={flags} />
       <SkillsGap gap={gap} />
       <NextStep text={scored.career.nextStep} />
+      <Roadmap phases={roadmap} />
+      <Curriculum curriculum={curriculum} />
+      <BrandingCoach branding={branding} />
       <EmailCapture careerId={scored.career.id} />
 
-      <div className="mt-12 border-t border-slate-200 pt-6 text-center">
+      <div className="mt-14 border-t border-black/10 pt-6 text-center">
         <button
           type="button"
           onClick={onStartOver}
-          className="text-sm font-medium text-slate-500 underline-offset-4 hover:text-slate-700 hover:underline"
+          className="font-mono text-xs uppercase tracking-wider text-zinc-400 transition hover:text-black"
         >
           Start over
         </button>

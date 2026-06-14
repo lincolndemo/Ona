@@ -270,3 +270,24 @@ export const QUESTIONS: Question[] = [
 ];
 
 export const TOTAL_QUESTIONS = QUESTIONS.length;
+
+/** Whether a single question has a valid answer. */
+export function isAnswered(question: Question, value: unknown): boolean {
+  switch (question.type) {
+    case "single":
+      return typeof value === "string" && value.length > 0;
+    case "multi":
+      return Array.isArray(value) && value.length > 0;
+    case "rank3":
+      return Array.isArray(value) && value.length === 3;
+    case "slider":
+      return typeof value === "number";
+    case "boolean":
+      return typeof value === "boolean";
+  }
+}
+
+/** Whether every question has been answered — i.e. a result can be produced. */
+export function isComplete(answers: Record<string, unknown>): boolean {
+  return QUESTIONS.every((q) => isAnswered(q, answers[q.field]));
+}

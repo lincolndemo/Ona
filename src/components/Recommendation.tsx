@@ -17,48 +17,51 @@ const CATEGORY_LABELS: Record<Career["category"], string> = {
 
 export function Recommendation({ career, reasoning }: RecommendationProps) {
   return (
-    <section>
-      <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+    <section className="animate-fade-up">
+      <span className="eyebrow">
+        <Sparkle className="h-3.5 w-3.5" />
         Your recommended path
-      </p>
+      </span>
 
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl">
           {career.name}
         </h1>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">
+        <span className="rounded-full bg-soft-purple px-3 py-1 font-mono text-xs uppercase tracking-wider text-black">
           {CATEGORY_LABELS[career.category]}
         </span>
       </div>
 
-      <p className="mt-3 text-lg text-slate-600">{career.oneLiner}</p>
+      <p className="mt-3 text-lg text-zinc-500">{career.oneLiner}</p>
 
       {reasoning && (
-        <p className="mt-6 rounded-2xl bg-indigo-50 p-6 text-lg leading-relaxed text-indigo-950">
+        <p
+          className="mt-6 animate-fade-up rounded-3xl bg-gradient-to-br from-soft-purple to-soft-pink p-7 text-lg leading-relaxed text-black"
+          style={{ animationDelay: "0.1s" }}
+        >
           {reasoning}
         </p>
       )}
 
       {/* Reality check — the trust anchor */}
-      <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
-          <h2 className="text-lg font-bold text-slate-900">
+      <div
+        className="card mt-8 animate-fade-up overflow-hidden"
+        style={{ animationDelay: "0.18s" }}
+      >
+        <div className="border-b border-black/5 bg-soft-green/60 px-7 py-5">
+          <h2 className="text-lg font-bold text-black">
             An honest look at the work
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="mt-0.5 text-sm text-zinc-500">
             No promises — here is what this career is actually like.
           </p>
         </div>
-        <dl className="divide-y divide-slate-100">
+        <dl className="divide-y divide-black/5">
           <RealityRow label="A typical day" value={career.realityCheck.typicalDay} />
           <RealityRow label="Tools you would use" value={career.realityCheck.toolsUsed} />
           <RealityRow label="How technical it is" value={career.realityCheck.technicalShare} />
           <RealityRow label="Common frustrations" value={career.realityCheck.commonFrustrations} />
-          <RealityRow
-            label="Salary range (monthly)"
-            value={career.realityCheck.salaryRangeNGN}
-            hint="Starting estimate in Naira, to confirm against current local data."
-          />
+          {/* Salary range hidden for now — data retained in careers.ts (salaryRangeNGN). */}
           <RealityRow label="Remote potential" value={career.realityCheck.remotePotential} />
         </dl>
       </div>
@@ -76,12 +79,20 @@ function RealityRow({
   hint?: string;
 }) {
   return (
-    <div className="grid gap-1 px-6 py-4 sm:grid-cols-[180px_1fr] sm:gap-6">
-      <dt className="text-sm font-semibold text-slate-500">{label}</dt>
-      <dd className="text-base leading-relaxed text-slate-800">
+    <div className="grid gap-1 px-7 py-5 transition-colors hover:bg-soft-purple/30 sm:grid-cols-[190px_1fr] sm:gap-6">
+      <dt className="font-mono text-xs uppercase tracking-wider text-zinc-400">{label}</dt>
+      <dd className="text-base leading-relaxed text-zinc-800">
         {value}
-        {hint && <span className="mt-1 block text-sm italic text-slate-400">{hint}</span>}
+        {hint && <span className="mt-1 block text-sm italic text-zinc-400">{hint}</span>}
       </dd>
     </div>
+  );
+}
+
+function Sparkle({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z" />
+    </svg>
   );
 }

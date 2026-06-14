@@ -1,11 +1,17 @@
 @import "tailwindcss";
 
+/* Design tokens adapted from the SynthAI (TailGrids) template:
+   Figtree for everything, Space Mono for uppercase labels/buttons, and a soft
+   pastel palette over white. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
-  --color-ink: #0f172a;
-  --color-brand: #4f46e5;
-  --color-brand-dark: #4338ca;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-soft-green: #edf4ea;
+  --color-soft-pink: #f7eff7;
+  --color-soft-purple: #ebebfc;
+  --color-ink: #0a0a0a;
+  --color-navy: #15324a;
 }
 
 html {
@@ -14,9 +20,100 @@ html {
 
 body {
   margin: 0;
-  background-color: #f8fafc;
+  min-height: 100vh;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Soft mesh background: green top-left, lavender right, pink lower-right. */
+  background-color: #fbfbfd;
+  background-image:
+    radial-gradient(60% 55% at 0% 0%, var(--color-soft-green) 0%, transparent 62%),
+    radial-gradient(65% 60% at 100% 28%, var(--color-soft-purple) 0%, transparent 60%),
+    radial-gradient(55% 55% at 88% 100%, var(--color-soft-pink) 0%, transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+@layer components {
+  /* Uppercase mono eyebrow label, as on the SynthAI hero. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-xs font-normal uppercase tracking-[0.18em] text-zinc-500;
+  }
+
+  /* Buttons: Space Mono, uppercase, generous radius. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-mono text-sm font-normal uppercase tracking-wider transition bg-black text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-mono text-sm font-normal uppercase tracking-wider transition border border-black/10 bg-white text-black hover:border-black/40;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-7 py-3.5 font-mono text-sm font-normal uppercase tracking-wider transition text-zinc-500 hover:bg-black/5 hover:text-black;
+  }
+
+  /* White card with the template's soft shadow. */
+  .card {
+    @apply rounded-3xl border border-black/5 bg-white shadow-[0px_6px_18.6px_0px_#d0d0d073];
+  }
+
+  /* Interactive option/card lift on hover. */
+  .lift {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-[0px_10px_24px_0px_#c8c8d066];
+  }
+}
+
+/* ---- Animation primitives ---- */
+@keyframes ona-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes ona-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes ona-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ona-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes ona-dash {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes ona-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes ona-spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes ona-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: ona-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-float { animation: ona-float 6s ease-in-out infinite; }
+.animate-bob { animation: ona-bob 2.4s ease-in-out infinite; }
+.animate-pulse-soft { animation: ona-pulse 2.6s ease-in-out infinite; }
+.animate-spin-slow { animation: ona-spin-slow 26s linear infinite; }
+.animate-blink { animation: ona-blink 4s ease-in-out infinite; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .animate-fade-up { opacity: 1; }
 }

@@ -58,6 +58,75 @@ export interface Career {
   nextStep: string;
 }
 
+export interface Resource {
+  label: string;
+  url: string;
+}
+
+export interface RoadmapPhase {
+  id: string;
+  title: string;
+  timeframe: string; // e.g. "Weeks 1–4"
+  focus: string;
+  milestones: string[];
+  resources: Resource[];
+}
+
+export interface BrandingPost {
+  title: string;
+  prompt: string;
+}
+
+export interface Branding {
+  headline: string;
+  bio: string;
+  posts: BrandingPost[];
+  tips: string[];
+}
+
+export type OpportunityType =
+  | "job"
+  | "remote"
+  | "freelance"
+  | "scholarship"
+  | "internship"
+  | "certification";
+
+export interface Opportunity {
+  id: string;
+  title: string;
+  org: string;
+  type: OpportunityType;
+  url: string;
+  blurb: string;
+  careers: string[]; // career ids it suits; empty means it suits everyone
+  audience: "nigeria" | "africa" | "global";
+  cost: "free" | "paid" | "mixed";
+}
+
+export interface CurriculumModule {
+  id: string;
+  order: number;
+  title: string;
+  focus: string;
+  outcomes: string[];
+  resources: Resource[];
+  status: "have" | "learn";
+  checkpoint: string;
+}
+
+export interface Curriculum {
+  modules: CurriculumModule[];
+}
+
+export type FlagTone = "good" | "note" | "caution";
+
+export interface Flag {
+  tone: FlagTone;
+  title: string;
+  detail: string;
+}
+
 export interface UserAnswers {
   motivationsTop3: Motivation[]; // ranked, top first
   situation: string;

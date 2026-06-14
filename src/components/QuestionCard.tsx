@@ -55,11 +55,15 @@ export function QuestionCard({ question, value, onChange }: QuestionCardProps) {
 
 function optionClasses(active: boolean): string {
   return [
-    "flex w-full items-center justify-between gap-3 rounded-xl border px-5 py-4 text-left text-base transition",
+    "flex w-full items-center justify-between gap-3 rounded-2xl border px-5 py-4 text-left text-base transition duration-200 animate-fade-up",
     active
-      ? "border-indigo-600 bg-indigo-50 text-indigo-900 ring-1 ring-indigo-600"
-      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+      ? "border-black bg-soft-purple text-black ring-1 ring-black shadow-[0px_6px_18.6px_0px_#d0d0d073]"
+      : "border-black/10 bg-white text-zinc-700 hover:-translate-y-0.5 hover:border-black/30 hover:shadow-[0px_8px_20px_0px_#c8c8d055]",
   ].join(" ");
+}
+
+function stagger(i: number): React.CSSProperties {
+  return { animationDelay: `${i * 0.045}s` };
 }
 
 function SingleSelect({
@@ -73,10 +77,11 @@ function SingleSelect({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      {options.map((opt) => (
+      {options.map((opt, i) => (
         <button
           key={opt.value}
           type="button"
+          style={stagger(i)}
           onClick={() => onChange(opt.value)}
           className={optionClasses(value === opt.value)}
         >
@@ -112,12 +117,13 @@ function MultiSelect({
 
   return (
     <div className="flex flex-col gap-3">
-      {options.map((opt) => {
+      {options.map((opt, i) => {
         const active = value.includes(opt.value);
         return (
           <button
             key={opt.value}
             type="button"
+            style={stagger(i)}
             onClick={() => toggle(opt.value)}
             className={optionClasses(active)}
           >
@@ -150,10 +156,10 @@ function RankThree({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-slate-500">
-        Tap your top three in order — your first tap is what matters most.
+      <p className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+        Tap your top three in order — your first tap matters most.
       </p>
-      {options.map((opt) => {
+      {options.map((opt, i) => {
         const rank = value.indexOf(opt.value);
         const active = rank !== -1;
         const full = value.length >= 3 && !active;
@@ -161,16 +167,17 @@ function RankThree({
           <button
             key={opt.value}
             type="button"
+            style={stagger(i)}
             onClick={() => toggle(opt.value)}
             disabled={full}
             className={[
               optionClasses(active),
-              full ? "cursor-not-allowed opacity-50" : "",
+              full ? "cursor-not-allowed opacity-40 hover:translate-y-0 hover:shadow-none" : "",
             ].join(" ")}
           >
             <span>{opt.label}</span>
             {active && (
-              <span className="rounded-full bg-indigo-600 px-2.5 py-0.5 text-sm font-semibold text-white">
+              <span className="rounded-full bg-black px-2.5 py-0.5 font-mono text-xs font-bold text-white">
                 {RANK_LABELS[rank]}
               </span>
             )}
@@ -194,12 +201,10 @@ function SliderInput({
 }) {
   const current = value ?? Math.round((min + max) / 2);
   return (
-    <div className="flex flex-col gap-6 px-1">
+    <div className="card flex animate-fade-up flex-col gap-6 p-8">
       <div className="text-center">
-        <span className="text-5xl font-extrabold text-indigo-600">
-          {current}
-        </span>
-        <span className="text-xl font-medium text-slate-400"> / {max}</span>
+        <span className="text-6xl font-bold text-black">{current}</span>
+        <span className="text-xl font-medium text-zinc-400"> / {max}</span>
       </div>
       <input
         type="range"
@@ -208,9 +213,9 @@ function SliderInput({
         step={1}
         value={current}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-indigo-600"
+        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-zinc-200 accent-black"
       />
-      <div className="flex justify-between text-sm text-slate-400">
+      <div className="flex justify-between font-mono text-xs uppercase tracking-wider text-zinc-400">
         <span>Beginner</span>
         <span>Very confident</span>
       </div>
@@ -230,16 +235,17 @@ function BooleanSelect({
       {[
         { label: "Yes", val: true },
         { label: "No", val: false },
-      ].map((opt) => (
+      ].map((opt, i) => (
         <button
           key={opt.label}
           type="button"
+          style={stagger(i)}
           onClick={() => onChange(opt.val)}
           className={[
-            "flex-1 rounded-xl border px-6 py-5 text-lg font-semibold transition",
+            "flex-1 animate-fade-up rounded-2xl border px-6 py-6 text-lg font-semibold transition duration-200",
             value === opt.val
-              ? "border-indigo-600 bg-indigo-50 text-indigo-900 ring-1 ring-indigo-600"
-              : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+              ? "border-black bg-soft-purple text-black ring-1 ring-black shadow-[0px_6px_18.6px_0px_#d0d0d073]"
+              : "border-black/10 bg-white text-zinc-700 hover:-translate-y-0.5 hover:border-black/30",
           ].join(" ")}
         >
           {opt.label}
@@ -252,7 +258,7 @@ function BooleanSelect({
 function CheckMark() {
   return (
     <svg
-      className="h-5 w-5 shrink-0 text-indigo-600"
+      className="h-5 w-5 shrink-0 text-black"
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden="true"

@@ -11,9 +11,9 @@ export function SkillsGap({ gap }: SkillsGapProps) {
   const monthLabel = gap.months === 1 ? "1 month" : `${gap.months} months`;
 
   return (
-    <section className="mt-10">
-      <h2 className="text-2xl font-bold text-slate-900">Where you stand</h2>
-      <p className="mt-1 text-base text-slate-500">
+    <section className="mt-12 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+      <h2 className="text-3xl font-bold tracking-tight text-black">Where you stand</h2>
+      <p className="mt-1 text-base text-zinc-500">
         The distance between where you are and where this role sits.
       </p>
 
@@ -32,12 +32,10 @@ export function SkillsGap({ gap }: SkillsGapProps) {
         />
       </div>
 
-      <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-6">
-        <p className="text-sm font-semibold uppercase tracking-wide text-amber-700">
-          Estimated learning time at your pace
-        </p>
-        <p className="mt-1 text-2xl font-bold text-amber-900">About {monthLabel}</p>
-        <p className="mt-1 text-sm text-amber-800">
+      <div className="card mt-6 bg-gradient-to-br from-soft-green to-soft-purple p-7">
+        <p className="eyebrow !text-zinc-600">Estimated learning time at your pace</p>
+        <p className="mt-2 text-3xl font-bold text-black">About {monthLabel}</p>
+        <p className="mt-1.5 text-sm text-zinc-600">
           Based on the hours a week you said you have. Fewer hours honestly means
           a longer road — this figure is one you can plan around.
         </p>
@@ -59,35 +57,28 @@ function Column({
 }) {
   const styles =
     tone === "have"
-      ? {
-          border: "border-emerald-200",
-          chip: "bg-emerald-100 text-emerald-800",
-          heading: "text-emerald-700",
-        }
-      : {
-          border: "border-indigo-200",
-          chip: "bg-indigo-100 text-indigo-800",
-          heading: "text-indigo-700",
-        };
+      ? { chip: "bg-soft-green text-zinc-800" }
+      : { chip: "bg-black text-white" };
 
   return (
-    <div className={`rounded-2xl border ${styles.border} bg-white p-5`}>
-      <h3 className={`text-sm font-bold uppercase tracking-wide ${styles.heading}`}>
+    <div className="card lift p-6">
+      <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-500">
         {title}
       </h3>
       {skills.length > 0 ? (
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {skills.map((skill) => (
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {skills.map((skill, i) => (
             <li
               key={skill}
-              className={`rounded-full px-3 py-1 text-sm font-medium ${styles.chip}`}
+              style={{ animationDelay: `${0.2 + i * 0.04}s` }}
+              className={`animate-fade-up rounded-full px-3 py-1.5 text-sm font-medium ${styles.chip}`}
             >
               {skill}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-slate-500">{empty}</p>
+        <p className="mt-4 text-sm text-zinc-500">{empty}</p>
       )}
     </div>
   );
