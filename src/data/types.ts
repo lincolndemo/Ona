@@ -104,18 +104,27 @@ export interface Opportunity {
   cost: "free" | "paid" | "mixed";
 }
 
+// A specialisation branch within a module — e.g. Front-end / Back-end / Mobile
+// for a developer — each listing concrete language and tool options.
+export interface CurriculumTrack {
+  name: string;
+  blurb: string;
+  options: string[];
+}
+
 export interface CurriculumModule {
   id: string;
-  order: number;
   title: string;
-  focus: string;
-  outcomes: string[];
+  summary: string; // why this module matters
+  topics: string[]; // concrete things to learn
+  tracks?: CurriculumTrack[]; // optional branches with their own options
   resources: Resource[];
-  status: "have" | "learn";
-  checkpoint: string;
+  project: string; // a hands-on checkpoint
 }
 
 export interface Curriculum {
+  careerId: string;
+  intro: string;
   modules: CurriculumModule[];
 }
 

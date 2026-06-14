@@ -1,6 +1,6 @@
-// Optional email capture, offered only after the result is shown. It never
-// blocks the result. On submit it POSTs to VITE_LEAD_ENDPOINT when configured,
-// otherwise it stores the lead locally — either way it shows success.
+// Optional email capture for product updates. It never blocks the result and it
+// does not send anything to the person — it simply collects the address. The
+// lead is POSTed to VITE_LEAD_ENDPOINT if set, otherwise stored in localStorage.
 
 import { useState } from "react";
 import { storeLeadLocally } from "../storage";
@@ -25,11 +25,7 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
     }
 
     setStatus("submitting");
-    const payload = {
-      email,
-      careerId,
-      timestamp: new Date().toISOString(),
-    };
+    const payload = { email, careerId, timestamp: new Date().toISOString() };
     const endpoint = import.meta.env.VITE_LEAD_ENDPOINT as string | undefined;
 
     try {
@@ -44,8 +40,6 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
       }
       setStatus("done");
     } catch {
-      // Even if the network call fails, keep the lead so nothing is lost, and
-      // still show success — the result is never gated on this.
       storeLeadLocally(payload);
       setStatus("done");
     }
@@ -54,11 +48,10 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
   if (status === "done") {
     return (
       <section className="card mt-12 animate-fade-up bg-soft-green/60 p-7 text-center">
-        <p className="text-lg font-semibold text-black">
-          Saved. Your result is on its way to {email}.
-        </p>
+        <p className="text-lg font-semibold text-black">You're on the list.</p>
         <p className="mt-1 text-sm text-zinc-600">
-          Keep this page open if you would like to read through the details again.
+          We'll send the occasional update on new paths and resources. Download
+          your result above to keep a copy.
         </p>
       </section>
     );
@@ -66,10 +59,11 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
 
   return (
     <section className="card mt-12 animate-fade-up p-7" style={{ animationDelay: "0.2s" }}>
-      <h2 className="text-xl font-bold text-black">Save your result</h2>
+      <h2 className="text-xl font-bold text-black">Get updates</h2>
       <p className="mt-1 text-sm text-zinc-500">
-        Optional. Drop your email to keep this recommendation, and we will send it
-        to you. You have already seen everything — this changes nothing.
+        Optional. Leave your email for occasional updates on new career paths and
+        learning resources. We won't spam you, and your result is already yours to
+        download.
       </p>
       <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3 sm:flex-row">
         <input
@@ -83,12 +77,8 @@ export function EmailCapture({ careerId }: EmailCaptureProps) {
           className="flex-1 rounded-xl border border-black/15 px-4 py-3 text-base text-black outline-none transition focus:border-black focus:ring-2 focus:ring-black/10"
           aria-label="Email address"
         />
-        <button
-          type="submit"
-          disabled={status === "submitting"}
-          className="btn-primary"
-        >
-          {status === "submitting" ? "Saving…" : "Email it to me"}
+        <button type="submit" disabled={status === "submitting"} className="btn-primary">
+          {status === "submitting" ? "Saving…" : "Keep me posted"}
         </button>
       </form>
       {status === "error" && (

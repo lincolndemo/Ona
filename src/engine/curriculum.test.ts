@@ -1,37 +1,50 @@
 import { describe, it, expect } from "vitest";
 import { CAREERS } from "../data/careers";
-import { computeGap } from "./gap";
 import { buildCurriculum } from "./curriculum";
-import { answers } from "./fixtures";
-
-const dataAnalyst = CAREERS.find((c) => c.id === "data_analyst")!;
-const user = answers({ situation: "unemployed", toolsUsed: ["none"] });
 
 describe("curriculum", () => {
-  it("has one module per prerequisite skill plus a capstone", () => {
-    const c = buildCurriculum(dataAnalyst, computeGap(user, dataAnalyst));
-    expect(c.modules).toHaveLength(dataAnalyst.prerequisiteSkills.length + 1);
-    expect(c.modules[c.modules.length - 1].id).toBe("capstone");
+  it("provides an authored curriculum for every career", () => {
+    for (const career of CAREERS) {
+      const c = buildCurriculum(career);
+      expect(c.careerId).toBe(career.id);
+      expect(c.intro.length).toBeGreaterThan(0);
+      expect(c.modules.length).toBeGreaterThanOrEqual(4);
+    }
   });
 
-  it("numbers modules in order and gives each outcomes and a checkpoint", () => {
-    const c = buildCurriculum(dataAnalyst, computeGap(user, dataAnalyst));
-    c.modules.forEach((m, i) => {
-      expect(m.order).toBe(i + 1);
-      expect(m.outcomes.length).toBeGreaterThan(0);
-      expect(m.checkpoint.length).toBeGreaterThan(0);
-    });
+  it("gives every module topics, a project, and valid resource links", () => {
+    for (const career of CAREERS) {
+      for (const m of buildCurriculum(career).modules) {
+        expect(m.title.length).toBeGreaterThan(0);
+        expect(m.topics.length).toBeGreaterThan(0);
+        expect(m.project.length).toBeGreaterThan(0);
+        for (const r of m.resources) {
+          expect(r.url).toMatch(/^https?:\/\//);
+        }
+      }
+    }
   });
 
-  it("marks already-held skills as 'have' and gaps as 'learn'", () => {
-    const skilled = answers({ situation: "accountant", toolsUsed: ["Excel", "SQL", "Power BI"] });
-    const c = buildCurriculum(dataAnalyst, computeGap(skilled, dataAnalyst));
-    const powerBi = c.modules.find((m) => m.title === "Power BI");
-    expect(powerBi?.status).toBe("have");
+  it("breaks the developer path into front-end, back-end and mobile tracks", () => {
+    const dev = CAREERS.find((c) => c.id === "software_developer")!;
+    const moduleWithTracks = buildCurriculum(dev).modules.find((m) => m.tracks);
+    expect(moduleWithTracks).toBeDefined();
+    const names = moduleWithTracks!.tracks!.map((t) => t.name.toLowerCase());
+    expect(names.some((n) => n.includes("front-end"))).toBe(true);
+    expect(names.some((n) => n.includes("back-end"))).toBe(true);
+    expect(names.some((n) => n.includes("mobile"))).toBe(true);
+  });
+
+  it("names multiple languages for the developer, not just Python", () => {
+    const dev = CAREERS.find((c) => c.id === "software_developer")!;
+    const text = JSON.stringify(buildCurriculum(dev));
+    for (const lang of ["JavaScript", "TypeScript", "Java", "Kotlin", "Swift", "Dart"]) {
+      expect(text).toContain(lang);
+    }
   });
 
   it("is deterministic", () => {
-    const gap = computeGap(user, dataAnalyst);
-    expect(buildCurriculum(dataAnalyst, gap)).toEqual(buildCurriculum(dataAnalyst, gap));
+    const dev = CAREERS.find((c) => c.id === "software_developer")!;
+    expect(buildCurriculum(dev)).toEqual(buildCurriculum(dev));
   });
 });

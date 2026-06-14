@@ -1,6 +1,7 @@
-// The curriculum: a followable syllabus of modules. Each can be expanded to see
-// outcomes, resources and a checkpoint, and marked complete to track progress.
-// State is local — a study aid, not persisted.
+// The curriculum: an authored, followable syllabus. Each module expands to show
+// what to learn, any specialisation tracks (with concrete language/tool options),
+// free resources and a hands-on project. Modules can be ticked off to track
+// progress. State is local — a study aid, not persisted.
 
 import { useMemo, useState } from "react";
 import type { Curriculum as CurriculumData } from "../data/types";
@@ -10,7 +11,7 @@ interface CurriculumProps {
 }
 
 export function Curriculum({ curriculum }: CurriculumProps) {
-  const { modules } = curriculum;
+  const { modules, intro } = curriculum;
   const [done, setDone] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState<string | null>(modules[0]?.id ?? null);
 
@@ -34,9 +35,7 @@ export function Curriculum({ curriculum }: CurriculumProps) {
           <h2 className="text-3xl font-bold tracking-tight text-black">
             Your curriculum
           </h2>
-          <p className="mt-1 text-base text-zinc-500">
-            A module-by-module path to follow, ending in a project you can show.
-          </p>
+          <p className="mt-1 max-w-lg text-base text-zinc-500">{intro}</p>
         </div>
         <div className="text-right">
           <span className="font-mono text-2xl font-bold text-black">{pct}%</span>
@@ -74,36 +73,51 @@ export function Curriculum({ curriculum }: CurriculumProps) {
                     isDone ? "bg-black text-white" : "bg-soft-purple text-black",
                   ].join(" ")}
                 >
-                  {m.order}
+                  {i + 1}
                 </span>
-                <span className="flex-1">
-                  <span className="flex items-center gap-2">
-                    <span className="font-semibold text-black">{m.title}</span>
-                    {m.status === "have" && (
-                      <span className="rounded-full bg-soft-green px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">
-                        You likely have this
-                      </span>
-                    )}
-                  </span>
-                </span>
+                <span className="flex-1 font-semibold text-black">{m.title}</span>
                 <Chevron className={`h-4 w-4 text-zinc-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
               </button>
 
               {isOpen && (
                 <div className="border-t border-black/5 px-5 pb-5 pt-4">
-                  <p className="text-sm text-zinc-600">{m.focus}</p>
+                  <p className="text-sm text-zinc-600">{m.summary}</p>
 
                   <p className="mt-4 font-mono text-xs uppercase tracking-wider text-zinc-400">
-                    By the end you can
+                    What you'll learn
                   </p>
                   <ul className="mt-2 space-y-1.5">
-                    {m.outcomes.map((o) => (
-                      <li key={o} className="flex items-start gap-2.5 text-sm text-zinc-800">
+                    {m.topics.map((t) => (
+                      <li key={t} className="flex items-start gap-2.5 text-sm text-zinc-800">
                         <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-black" />
-                        <span className="leading-relaxed">{o}</span>
+                        <span className="leading-relaxed">{t}</span>
                       </li>
                     ))}
                   </ul>
+
+                  {m.tracks && m.tracks.length > 0 && (
+                    <div className="mt-4">
+                      <p className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+                        Choose a track
+                      </p>
+                      <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                        {m.tracks.map((track) => (
+                          <div key={track.name} className="rounded-2xl border border-black/10 bg-soft-purple/20 p-4">
+                            <h4 className="font-bold text-black">{track.name}</h4>
+                            <p className="mt-0.5 text-xs text-zinc-500">{track.blurb}</p>
+                            <ul className="mt-2 space-y-1">
+                              {track.options.map((o) => (
+                                <li key={o} className="flex items-start gap-2 text-sm text-zinc-700">
+                                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-zinc-400" />
+                                  <span className="leading-relaxed">{o}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {m.resources.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -123,8 +137,8 @@ export function Curriculum({ curriculum }: CurriculumProps) {
                   )}
 
                   <div className="mt-4 rounded-xl bg-soft-green/50 p-3 text-sm text-zinc-700">
-                    <span className="font-semibold text-black">Checkpoint: </span>
-                    {m.checkpoint}
+                    <span className="font-semibold text-black">Project: </span>
+                    {m.project}
                   </div>
 
                   <button

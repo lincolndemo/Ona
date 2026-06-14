@@ -23,6 +23,7 @@ import { buildFlags } from "./engine/flags";
 import { buildRoadmap } from "./engine/roadmap";
 import { buildCurriculum } from "./engine/curriculum";
 import { buildBranding } from "./engine/branding";
+import { downloadResultPdf } from "./pdf";
 import {
   clearProgress,
   loadAnswers,
@@ -145,13 +146,35 @@ function Result({
       reasoning: buildReasoning(answers, scored),
       flags: buildFlags(answers, scored.career, gap),
       roadmap: buildRoadmap(answers, scored.career, gap),
-      curriculum: buildCurriculum(scored.career, gap),
+      curriculum: buildCurriculum(scored.career),
       branding: buildBranding(scored.career, gap),
     };
   }, [answers]);
 
+  function handleDownload() {
+    try {
+      downloadResultPdf({
+        career: scored.career,
+        reasoning,
+        gap,
+        roadmap,
+        curriculum,
+        branding,
+      });
+    } catch (err) {
+      console.error("PDF download failed", err);
+      alert("Sorry — the PDF could not be generated. Please try again.");
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
+      <div className="mb-6 flex justify-end">
+        <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
+          <DownloadIcon className="h-4 w-4" />
+          Download as PDF
+        </button>
+      </div>
       <Recommendation career={scored.career} reasoning={reasoning} />
       <Flags flags={flags} />
       <SkillsGap gap={gap} />
@@ -161,7 +184,11 @@ function Result({
       <BrandingCoach branding={branding} />
       <EmailCapture careerId={scored.career.id} />
 
-      <div className="mt-14 border-t border-black/10 pt-6 text-center">
+      <div className="mt-14 flex flex-col items-center gap-4 border-t border-black/10 pt-6">
+        <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
+          <DownloadIcon className="h-4 w-4" />
+          Download as PDF
+        </button>
         <button
           type="button"
           onClick={onStartOver}
@@ -171,5 +198,13 @@ function Result({
         </button>
       </div>
     </div>
+  );
+}
+
+function DownloadIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }

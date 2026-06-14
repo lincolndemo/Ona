@@ -56,11 +56,15 @@ tune the scoring — no engine changes needed.
 > **Before launch:** salary figures in `careers.ts` are placeholders in Nigerian
 > Naira marked `// VERIFY`. Confirm them against current local data.
 
-### Email capture
+### Result download & email updates
 
-Optional and never blocks the result. On submit, Ona POSTs
-`{ email, careerId, timestamp }` to `VITE_LEAD_ENDPOINT` if set; otherwise the
-lead is stored in `localStorage`. See `.env.example`.
+- **Download as PDF:** the person gets their result as a PDF, generated
+  client-side from the structured data with jsPDF (crisp, selectable text — not a
+  screenshot). No backend involved.
+- **Email updates:** the email field is for product updates only; it does **not**
+  email the result. On submit, Ona POSTs `{ email, careerId, timestamp }` to
+  `VITE_LEAD_ENDPOINT` if set, otherwise stores it in `localStorage`. It never
+  blocks the result. See `.env.example`.
 
 ### Smoke test
 
