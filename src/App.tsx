@@ -16,7 +16,12 @@ import { OpportunityScanner } from "./components/OpportunityScanner";
 import { AiForPathPage } from "./components/AiForPathPage";
 import { AiForPath } from "./components/AiForPath";
 import { PageNav } from "./components/PageNav";
+import { ResultHero } from "./components/ResultHero";
+import { ResultNav } from "./components/ResultNav";
+import type { NavSection } from "./components/ResultNav";
+import { Confetti } from "./components/Confetti";
 import { SubPathChooser } from "./components/SubPathChooser";
+import { MatchBreakdown } from "./components/MatchBreakdown";
 import { NextStep } from "./components/NextStep";
 import { EmailCapture } from "./components/EmailCapture";
 import type { UserAnswers } from "./data/types";
@@ -28,6 +33,7 @@ import { buildRoadmap } from "./engine/roadmap";
 import { buildCurriculum } from "./engine/curriculum";
 import { buildBranding } from "./engine/branding";
 import { rankSubPaths, subPathReason } from "./engine/subpath";
+import { explainMatch } from "./engine/breakdown";
 import { aiGuideFor } from "./data/aiGuides";
 import { downloadResultPdf } from "./pdf";
 import {
@@ -174,7 +180,7 @@ function Result({
   onOpenAi: () => void;
 }) {
   // Career-level results — stable for a given set of answers.
-  const { scored, reasoning, gap, flags, ranked } = useMemo(() => {
+  const { scored, reasoning, gap, flags, ranked, breakdown } = useMemo(() => {
     const scored = topMatch(answers);
     const gap = computeGap(answers, scored.career);
     return {
@@ -183,6 +189,7 @@ function Result({
       reasoning: buildReasoning(answers, scored),
       flags: buildFlags(answers, scored.career, gap),
       ranked: rankSubPaths(answers, scored.career),
+      breakdown: explainMatch(answers, scored),
     };
   }, [answers]);
 
@@ -221,46 +228,87 @@ function Result({
     }
   }
 
+  // Scroll-spy: highlight the section currently in view.
+  const [activeId, setActiveId] = useState(RESULT_SECTIONS[0].id);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActiveId(visible[0].target.id);
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: [0, 0.1, 0.5, 1] },
+    );
+    for (const s of RESULT_SECTIONS) {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  function jump(id: string) {
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+
   return (
-    <div className="mx-auto max-w-2xl px-6 pb-10">
+    <div className="mx-auto max-w-2xl px-6 pb-28 sm:pb-10">
+      <Confetti />
       <PageNav
         onHome={onHome}
         onOpenOpportunities={onOpenOpportunities}
         onOpenBranding={onOpenBranding}
         onOpenAi={onOpenAi}
       />
-      <div className="mb-6 flex justify-end">
-        <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
-          <DownloadIcon className="h-4 w-4" />
-          Download as PDF
-        </button>
-      </div>
-      <Recommendation career={scored.career} reasoning={reasoning} />
-      <SubPathChooser
-        ranked={ranked}
-        selectedId={selectedSub?.id ?? null}
-        onSelect={setSubId}
-        reason={selectedSub ? subPathReason(answers, selectedSub) : ""}
+
+      <ResultHero
+        career={scored.career}
+        subPath={selectedSub}
+        matchValue={scored.total}
+        onDownload={handleDownload}
       />
-      <Flags flags={flags} />
-      <SkillsGap gap={gap} />
-      <NextStep text={scored.career.nextStep} />
-      <Roadmap phases={roadmap} />
-      <Curriculum curriculum={curriculum} />
-      <AiForPath guide={aiGuideFor(scored.career.id)} careerName={scored.career.name} />
-      <BrandingCoach branding={branding} />
+
+      <ResultNav sections={RESULT_SECTIONS} activeId={activeId} onJump={jump} />
+
+      <div id="overview" className="scroll-mt-24">
+        <SubPathChooser
+          ranked={ranked}
+          selectedId={selectedSub?.id ?? null}
+          onSelect={setSubId}
+          reason={selectedSub ? subPathReason(answers, selectedSub) : ""}
+        />
+        <div className="mt-8">
+          <Recommendation career={scored.career} reasoning={reasoning} showHeader={false} />
+        </div>
+        <MatchBreakdown items={breakdown} />
+      </div>
+      <div id="situation" className="scroll-mt-24">
+        <Flags flags={flags} />
+      </div>
+      <div id="skills" className="scroll-mt-24">
+        <SkillsGap gap={gap} />
+      </div>
+      <div id="next" className="scroll-mt-24">
+        <NextStep text={scored.career.nextStep} />
+      </div>
+      <div id="roadmap" className="scroll-mt-24">
+        <Roadmap phases={roadmap} />
+      </div>
+      <div id="curriculum" className="scroll-mt-24">
+        <Curriculum curriculum={curriculum} />
+      </div>
+      <div id="ai" className="scroll-mt-24">
+        <AiForPath guide={aiGuideFor(scored.career.id)} careerName={scored.career.name} />
+      </div>
+      <div id="branding" className="scroll-mt-24">
+        <BrandingCoach branding={branding} />
+      </div>
       <EmailCapture careerId={scored.career.id} />
 
       <div className="mt-14 flex flex-col items-center gap-4 border-t border-black/10 pt-6">
-        <div className="flex flex-wrap justify-center gap-3">
-          <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
-            <DownloadIcon className="h-4 w-4" />
-            Download as PDF
-          </button>
-          <button onClick={onHome} className="btn-primary !px-5 !py-2.5">
-            Back to home
-          </button>
-        </div>
         <button
           type="button"
           onClick={onStartOver}
@@ -269,9 +317,34 @@ function Result({
           Start over
         </button>
       </div>
+
+      {/* Sticky mobile action bar */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 flex gap-3 border-t border-black/10 bg-white/90 px-4 py-3 backdrop-blur sm:hidden"
+        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
+        <button onClick={onHome} className="btn-secondary pressable flex-1 !py-3">
+          Home
+        </button>
+        <button onClick={handleDownload} className="btn-primary pressable flex-1 !py-3">
+          <DownloadIcon className="h-4 w-4" />
+          PDF
+        </button>
+      </div>
     </div>
   );
 }
+
+const RESULT_SECTIONS: NavSection[] = [
+  { id: "overview", label: "Overview" },
+  { id: "situation", label: "Situation" },
+  { id: "skills", label: "Skills" },
+  { id: "next", label: "This week" },
+  { id: "roadmap", label: "Roadmap" },
+  { id: "curriculum", label: "Curriculum" },
+  { id: "ai", label: "AI" },
+  { id: "branding", label: "Branding" },
+];
 
 function DownloadIcon({ className }: { className?: string }) {
   return (

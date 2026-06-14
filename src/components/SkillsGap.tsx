@@ -10,6 +10,12 @@ interface SkillsGapProps {
 export function SkillsGap({ gap }: SkillsGapProps) {
   const monthLabel = gap.months === 1 ? "1 month" : `${gap.months} months`;
 
+  const required = gap.have.length + gap.toBuild.length;
+  // How much of the role's required skills the person already holds, as a rough
+  // readiness signal. (gap.have can include transferable skills beyond the role.)
+  const coreHeld = Math.max(0, required - gap.toBuild.length);
+  const readiness = required === 0 ? 1 : coreHeld / required;
+
   return (
     <section className="mt-12 animate-fade-up" style={{ animationDelay: "0.1s" }}>
       <h2 className="text-3xl font-bold tracking-tight text-black">Where you stand</h2>
@@ -17,7 +23,25 @@ export function SkillsGap({ gap }: SkillsGapProps) {
         The distance between where you are and where this role sits.
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      {/* Readiness bar */}
+      <div className="mt-6 card p-5">
+        <div className="flex items-baseline justify-between">
+          <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Starting readiness
+          </span>
+          <span className="font-mono text-sm font-bold tabular-nums text-black">
+            {coreHeld} / {required} core skills
+          </span>
+        </div>
+        <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-black/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-700 ease-out"
+            style={{ width: `${Math.round(readiness * 100)}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <Column
           title="Skills you already have"
           tone="have"

@@ -7,6 +7,7 @@ import type { Career } from "../data/types";
 interface RecommendationProps {
   career: Career;
   reasoning: string;
+  showHeader?: boolean;
 }
 
 const CATEGORY_LABELS: Record<Career["category"], string> = {
@@ -15,24 +16,28 @@ const CATEGORY_LABELS: Record<Career["category"], string> = {
   hybrid: "Hybrid",
 };
 
-export function Recommendation({ career, reasoning }: RecommendationProps) {
+export function Recommendation({ career, reasoning, showHeader = true }: RecommendationProps) {
   return (
     <section className="animate-fade-up">
-      <span className="eyebrow">
-        <Sparkle className="h-3.5 w-3.5" />
-        Your recommended path
-      </span>
+      {showHeader && (
+        <>
+          <span className="eyebrow">
+            <Sparkle className="h-3.5 w-3.5" />
+            Your recommended path
+          </span>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl">
-          {career.name}
-        </h1>
-        <span className="rounded-full bg-soft-purple px-3 py-1 font-mono text-xs uppercase tracking-wider text-black">
-          {CATEGORY_LABELS[career.category]}
-        </span>
-      </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl">
+              {career.name}
+            </h1>
+            <span className="rounded-full bg-soft-purple px-3 py-1 font-mono text-xs uppercase tracking-wider text-black">
+              {CATEGORY_LABELS[career.category]}
+            </span>
+          </div>
 
-      <p className="mt-3 text-lg text-zinc-500">{career.oneLiner}</p>
+          <p className="mt-3 text-lg text-zinc-500">{career.oneLiner}</p>
+        </>
+      )}
 
       {reasoning && (
         <p
