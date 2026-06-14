@@ -6,6 +6,7 @@ import { buildRoadmap } from "./engine/roadmap";
 import { buildCurriculum } from "./engine/curriculum";
 import { buildBranding } from "./engine/branding";
 import { topMatch } from "./engine/match";
+import { aiGuideFor } from "./data/aiGuides";
 import { renderResultDoc } from "./pdf";
 import { ENGINEER } from "./engine/fixtures";
 
@@ -19,6 +20,7 @@ describe("result PDF", () => {
       gap,
       roadmap: buildRoadmap(ENGINEER, scored.career, gap),
       curriculum: buildCurriculum(scored.career),
+      aiGuide: aiGuideFor(scored.career.id),
       branding: buildBranding(scored.career, gap),
     });
     // A real, multi-page document.

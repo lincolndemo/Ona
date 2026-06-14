@@ -47,12 +47,13 @@ export function buildRoadmap(
   _user: UserAnswers,
   career: Career,
   gap: SkillsGap,
+  projectOverride?: string,
 ): RoadmapPhase[] {
   // What to learn — the gap if there is one, otherwise deepen the core skills.
   const toLearn = gap.toBuild.length > 0 ? gap.toBuild : career.prerequisiteSkills;
   const firstSkills = toLearn.slice(0, 2);
   const laterSkills = toLearn.slice(2);
-  const project = portfolioProjectFor(career.id);
+  const project = projectOverride ?? portfolioProjectFor(career.id);
   const [t1, t2, t3] = timeframes(gap.months);
 
   const phase1: RoadmapPhase = {

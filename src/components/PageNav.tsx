@@ -8,13 +8,15 @@ interface PageNavProps {
   onHome: () => void;
   onOpenOpportunities?: () => void;
   onOpenBranding?: () => void;
-  active?: "opportunities" | "branding";
+  onOpenAi?: () => void;
+  active?: "opportunities" | "branding" | "ai";
 }
 
 export function PageNav({
   onHome,
   onOpenOpportunities,
   onOpenBranding,
+  onOpenAi,
   active,
 }: PageNavProps) {
   return (
@@ -37,6 +39,11 @@ export function PageNav({
         {onOpenBranding && (
           <NavLink active={active === "branding"} onClick={onOpenBranding}>
             Branding
+          </NavLink>
+        )}
+        {onOpenAi && (
+          <NavLink active={active === "ai"} onClick={onOpenAi}>
+            AI for path
           </NavLink>
         )}
         <button onClick={onHome} className="btn-primary !rounded-full !px-5 !py-2.5">

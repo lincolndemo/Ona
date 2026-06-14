@@ -84,6 +84,22 @@ export interface Branding {
   tips: string[];
 }
 
+export interface AiLearnItem {
+  skill: string;
+  why: string;
+  resource?: Resource;
+}
+
+// "AI for my path" — how AI shows up in a given field: its role, what to use it
+// for day to day, and what AI skills are worth learning to get ahead.
+export interface AiGuide {
+  careerId: string;
+  role: string; // the role AI plays in this field
+  uses: string[]; // concrete ways to use AI in this field
+  learn: AiLearnItem[]; // AI skills worth learning for this field
+  caution: string; // an honest caveat
+}
+
 export type OpportunityType =
   | "job"
   | "remote"
@@ -128,6 +144,25 @@ export interface Curriculum {
   modules: CurriculumModule[];
 }
 
+// A specialisation within a career: either a technical "track" (e.g. front-end,
+// back-end, mobile) or an industry "domain" (e.g. healthcare, logistics). It
+// carries the signals that favour it and the content that tailors the result.
+export interface SubPath {
+  id: string;
+  name: string;
+  blurb: string;
+  kind: "track" | "domain";
+  // Signals — any overlap raises this sub-path's score for a person.
+  industries?: string[];
+  situations?: string[];
+  motivations?: Motivation[];
+  thinkingStyles?: ThinkingStyle[];
+  buildPreference?: string[];
+  // Tailoring.
+  project: string; // niche portfolio / capstone project
+  modules?: CurriculumModule[]; // niche modules inserted before the capstone
+}
+
 export type FlagTone = "good" | "note" | "caution";
 
 export interface Flag {
@@ -151,4 +186,6 @@ export interface UserAnswers {
   excitingActivities: ThinkingStyle[];
   bestStatement: ThinkingStyle;
   rolePreference: RoleOrientation;
+  industries: string[]; // sectors the person is drawn to
+  buildPreference: string; // what they most want to build/work on
 }

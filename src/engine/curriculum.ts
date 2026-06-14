@@ -2,7 +2,7 @@
 // (src/data/curricula.ts); this just looks one up with a safe generic fallback
 // for any career that has not been authored yet.
 
-import type { Career, Curriculum } from "../data/types";
+import type { Career, Curriculum, SubPath } from "../data/types";
 import { CURRICULA } from "../data/curricula";
 import { resourcesFor } from "../data/resources";
 import { portfolioProjectFor } from "../data/roadmapContent";
@@ -35,6 +35,27 @@ function genericCurriculum(career: Career): Curriculum {
   };
 }
 
-export function buildCurriculum(career: Career): Curriculum {
-  return CURRICULA[career.id] ?? genericCurriculum(career);
+export function buildCurriculum(career: Career, subPath?: SubPath | null): Curriculum {
+  const base = CURRICULA[career.id] ?? genericCurriculum(career);
+  if (!subPath) return base;
+
+  // Tailor to the sub-path: insert its niche modules before the capstone and
+  // point the capstone at the niche project.
+  const capstoneIdx = base.modules.findIndex((m) => m.id === "capstone");
+  const insertAt = capstoneIdx === -1 ? base.modules.length : capstoneIdx;
+
+  const modules = [...base.modules];
+  if (subPath.modules?.length) {
+    modules.splice(insertAt, 0, ...subPath.modules);
+  }
+
+  const tailored = modules.map((m) =>
+    m.id === "capstone" ? { ...m, project: subPath.project } : m,
+  );
+
+  return {
+    careerId: base.careerId,
+    intro: `${base.intro} Tailored to ${subPath.name}.`,
+    modules: tailored,
+  };
 }

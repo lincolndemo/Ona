@@ -267,6 +267,44 @@ export const QUESTIONS: Question[] = [
       { value: "hybrid", label: "Hybrid — a mix of both" },
     ],
   },
+
+  // Section 7 — Direction (drives the specialisation / sub-path)
+  {
+    id: "industries",
+    section: 7,
+    sectionTitle: "Direction",
+    field: "industries",
+    type: "multi",
+    prompt: "Which industries interest you?",
+    help: "Pick any that appeal — this helps us suggest a focus within your path.",
+    options: [
+      { value: "fintech", label: "Fintech / banking" },
+      { value: "health", label: "Health" },
+      { value: "logistics", label: "Logistics / supply chain" },
+      { value: "education", label: "Education" },
+      { value: "agriculture", label: "Agriculture" },
+      { value: "ecommerce", label: "E-commerce / retail" },
+      { value: "government", label: "Government / public sector" },
+      { value: "media", label: "Media / entertainment" },
+      { value: "other", label: "Not sure yet / something else" },
+    ],
+  },
+  {
+    id: "buildPreference",
+    section: 7,
+    sectionTitle: "Direction",
+    field: "buildPreference",
+    type: "single",
+    prompt: "What kind of work pulls you most?",
+    help: "There's no wrong answer — 'not sure' is fine.",
+    options: [
+      { value: "web", label: "Websites & web apps" },
+      { value: "mobile", label: "Mobile apps" },
+      { value: "backend", label: "Servers, APIs & data" },
+      { value: "people", label: "Working with people, content & ideas" },
+      { value: "not_sure", label: "Not sure yet" },
+    ],
+  },
 ];
 
 export const TOTAL_QUESTIONS = QUESTIONS.length;

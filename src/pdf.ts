@@ -5,19 +5,23 @@
 
 import { jsPDF } from "jspdf";
 import type {
+  AiGuide,
   Branding,
   Career,
   Curriculum,
   RoadmapPhase,
+  SubPath,
 } from "./data/types";
 import type { SkillsGap } from "./engine/gap";
 
 export interface ResultPdfData {
   career: Career;
+  subPath?: SubPath | null;
   reasoning: string;
   gap: SkillsGap;
   roadmap: RoadmapPhase[];
   curriculum: Curriculum;
+  aiGuide?: AiGuide;
   branding: Branding;
 }
 
@@ -108,6 +112,12 @@ export function renderResultDoc(data: ResultPdfData): jsPDF {
   y += 2;
   lines(data.career.name, 24, 28, NAVY, true);
   body(data.career.oneLiner);
+  if (data.subPath) {
+    y += 4;
+    label("Specialisation");
+    lines(data.subPath.name, 13, 17, NAVY, true);
+    body(data.subPath.blurb);
+  }
 
   // --- Why this fits ---
   if (data.reasoning) {
@@ -177,6 +187,19 @@ export function renderResultDoc(data: ResultPdfData): jsPDF {
     body(`Project: ${m.project}`);
     y += 4;
   });
+
+  // --- AI for your path ---
+  if (data.aiGuide) {
+    heading("AI for your path");
+    label("The role AI plays here");
+    body(data.aiGuide.role);
+    y += 2;
+    label("Use AI to");
+    bullets(data.aiGuide.uses);
+    label("Learn this AI to get ahead");
+    bullets(data.aiGuide.learn.map((l) => `${l.skill} — ${l.why}`));
+    body(`Keep in mind: ${data.aiGuide.caution}`);
+  }
 
   // --- Branding ---
   heading("Personal branding");

@@ -17,6 +17,8 @@ const base: UserAnswers = {
   excitingActivities: ["analysing", "solving"],
   bestStatement: "analysing",
   rolePreference: "technical",
+  industries: ["fintech"],
+  buildPreference: "backend",
 };
 
 export function answers(overrides: Partial<UserAnswers> = {}): UserAnswers {
@@ -32,6 +34,8 @@ export const TEACHER = answers({
   excitingActivities: ["teaching", "organising"],
   bestStatement: "teaching",
   rolePreference: "non_technical",
+  industries: ["education"],
+  buildPreference: "people",
 });
 
 // An engineer who wants to build, technically, with plenty of time.
@@ -44,4 +48,6 @@ export const ENGINEER = answers({
   excitingActivities: ["building", "solving"],
   bestStatement: "building",
   rolePreference: "technical",
+  industries: ["fintech"],
+  buildPreference: "mobile",
 });

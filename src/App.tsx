@@ -13,7 +13,10 @@ import { Curriculum } from "./components/Curriculum";
 import { BrandingCoach } from "./components/BrandingCoach";
 import { BrandingPage } from "./components/BrandingPage";
 import { OpportunityScanner } from "./components/OpportunityScanner";
+import { AiForPathPage } from "./components/AiForPathPage";
+import { AiForPath } from "./components/AiForPath";
 import { PageNav } from "./components/PageNav";
+import { SubPathChooser } from "./components/SubPathChooser";
 import { NextStep } from "./components/NextStep";
 import { EmailCapture } from "./components/EmailCapture";
 import type { UserAnswers } from "./data/types";
@@ -24,6 +27,8 @@ import { buildFlags } from "./engine/flags";
 import { buildRoadmap } from "./engine/roadmap";
 import { buildCurriculum } from "./engine/curriculum";
 import { buildBranding } from "./engine/branding";
+import { rankSubPaths, subPathReason } from "./engine/subpath";
+import { aiGuideFor } from "./data/aiGuides";
 import { downloadResultPdf } from "./pdf";
 import {
   clearProgress,
@@ -38,7 +43,8 @@ type Stage =
   | "assessment"
   | "result"
   | "branding"
-  | "opportunities";
+  | "opportunities"
+  | "ai";
 
 type Answers = Record<string, unknown>;
 
@@ -88,6 +94,7 @@ export default function App() {
         onResume={handleResume}
         onOpenBranding={() => setStage("branding")}
         onOpenOpportunities={() => setStage("opportunities")}
+        onOpenAi={() => setStage("ai")}
       />
     );
   }
@@ -114,6 +121,18 @@ export default function App() {
     );
   }
 
+  if (stage === "ai") {
+    return (
+      <AiForPathPage
+        answers={answers}
+        onHome={() => setStage("landing")}
+        onStart={handleStartFresh}
+        onOpenBranding={() => setStage("branding")}
+        onOpenOpportunities={() => setStage("opportunities")}
+      />
+    );
+  }
+
   if (stage === "assessment") {
     return (
       <Assessment
@@ -134,6 +153,7 @@ export default function App() {
       onHome={() => setStage("landing")}
       onOpenBranding={() => setStage("branding")}
       onOpenOpportunities={() => setStage("opportunities")}
+      onOpenAi={() => setStage("ai")}
     />
   );
 }
@@ -144,17 +164,17 @@ function Result({
   onHome,
   onOpenBranding,
   onOpenOpportunities,
+  onOpenAi,
 }: {
   answers: UserAnswers;
   onStartOver: () => void;
   onHome: () => void;
   onOpenBranding: () => void;
   onOpenOpportunities: () => void;
+  onOpenAi: () => void;
 }) {
-  // Deterministic: same answers always yield the same match, reasoning, gap,
-  // flags, and roadmap.
-  const { scored, reasoning, gap, flags, roadmap, curriculum, branding } =
-    useMemo(() => {
+  // Career-level results — stable for a given set of answers.
+  const { scored, reasoning, gap, flags, ranked } = useMemo(() => {
     const scored = topMatch(answers);
     const gap = computeGap(answers, scored.career);
     return {
@@ -162,20 +182,37 @@ function Result({
       gap,
       reasoning: buildReasoning(answers, scored),
       flags: buildFlags(answers, scored.career, gap),
-      roadmap: buildRoadmap(answers, scored.career, gap),
-      curriculum: buildCurriculum(scored.career),
-      branding: buildBranding(scored.career, gap),
+      ranked: rankSubPaths(answers, scored.career),
     };
   }, [answers]);
+
+  // The chosen specialisation — defaults to the best fit, switchable below.
+  const [subId, setSubId] = useState<string | null>(
+    () => ranked[0]?.subPath.id ?? null,
+  );
+  const selectedSub =
+    ranked.find((r) => r.subPath.id === subId)?.subPath ?? ranked[0]?.subPath ?? null;
+
+  // Content tailored to the selected specialisation.
+  const { roadmap, curriculum, branding } = useMemo(
+    () => ({
+      roadmap: buildRoadmap(answers, scored.career, gap, selectedSub?.project),
+      curriculum: buildCurriculum(scored.career, selectedSub),
+      branding: buildBranding(scored.career, gap, selectedSub),
+    }),
+    [answers, scored.career, gap, selectedSub],
+  );
 
   function handleDownload() {
     try {
       downloadResultPdf({
         career: scored.career,
+        subPath: selectedSub,
         reasoning,
         gap,
         roadmap,
         curriculum,
+        aiGuide: aiGuideFor(scored.career.id),
         branding,
       });
     } catch (err) {
@@ -190,6 +227,7 @@ function Result({
         onHome={onHome}
         onOpenOpportunities={onOpenOpportunities}
         onOpenBranding={onOpenBranding}
+        onOpenAi={onOpenAi}
       />
       <div className="mb-6 flex justify-end">
         <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
@@ -198,11 +236,18 @@ function Result({
         </button>
       </div>
       <Recommendation career={scored.career} reasoning={reasoning} />
+      <SubPathChooser
+        ranked={ranked}
+        selectedId={selectedSub?.id ?? null}
+        onSelect={setSubId}
+        reason={selectedSub ? subPathReason(answers, selectedSub) : ""}
+      />
       <Flags flags={flags} />
       <SkillsGap gap={gap} />
       <NextStep text={scored.career.nextStep} />
       <Roadmap phases={roadmap} />
       <Curriculum curriculum={curriculum} />
+      <AiForPath guide={aiGuideFor(scored.career.id)} careerName={scored.career.name} />
       <BrandingCoach branding={branding} />
       <EmailCapture careerId={scored.career.id} />
 

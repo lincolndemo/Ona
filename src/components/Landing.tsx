@@ -11,6 +11,7 @@ interface LandingProps {
   onResume: () => void;
   onOpenBranding: () => void;
   onOpenOpportunities: () => void;
+  onOpenAi: () => void;
 }
 
 export function Landing({
@@ -19,6 +20,7 @@ export function Landing({
   onResume,
   onOpenBranding,
   onOpenOpportunities,
+  onOpenAi,
 }: LandingProps) {
   return (
     <div className="mx-auto min-h-screen max-w-6xl px-6">
@@ -41,6 +43,12 @@ export function Landing({
           >
             Branding
           </button>
+          <button
+            onClick={onOpenAi}
+            className="hidden rounded-full px-4 py-2 font-mono text-xs uppercase tracking-wider text-zinc-600 transition hover:bg-black/5 hover:text-black sm:block"
+          >
+            AI for path
+          </button>
           <button onClick={onStart} className="btn-primary !rounded-full !px-5 !py-2.5">
             Get started
           </button>
@@ -60,6 +68,12 @@ export function Landing({
           className="rounded-full border border-black/10 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-zinc-600"
         >
           Branding
+        </button>
+        <button
+          onClick={onOpenAi}
+          className="rounded-full border border-black/10 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-zinc-600"
+        >
+          AI for path
         </button>
       </div>
 

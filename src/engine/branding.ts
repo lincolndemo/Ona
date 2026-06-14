@@ -2,7 +2,7 @@
 // use branding copy — a headline, an about/bio paragraph, a posting plan, and
 // tips. Deterministic and copy-ready; no model calls.
 
-import type { Branding, Career } from "../data/types";
+import type { Branding, Career, SubPath } from "../data/types";
 import { portfolioProjectFor } from "../data/roadmapContent";
 import type { SkillsGap } from "./gap";
 
@@ -21,18 +21,25 @@ function stripPeriod(text: string): string {
   return text.replace(/\.\s*$/, "");
 }
 
-export function buildBranding(career: Career, gap: SkillsGap): Branding {
+export function buildBranding(
+  career: Career,
+  gap: SkillsGap,
+  subPath?: SubPath | null,
+): Branding {
   // What they are actively learning shapes the story; fall back to core skills.
   const focusSkills = (gap.toBuild.length > 0 ? gap.toBuild : career.prerequisiteSkills).slice(0, 3);
   const firstSkill = focusSkills[0] ?? "the fundamentals";
-  const project = portfolioProjectFor(career.id);
-  const name = career.name;
+  const project = subPath?.project ?? portfolioProjectFor(career.id);
+  // Brand around the specialisation when there is one — it's sharper and more
+  // hireable than the generic career title.
+  const name = subPath?.name ?? career.name;
+  const descriptor = subPath?.blurb ?? career.oneLiner;
   const an = article(name);
 
-  const headline = `Aspiring ${name} · ${stripPeriod(career.oneLiner)} · Learning in public`;
+  const headline = `Aspiring ${name} · ${stripPeriod(descriptor)} · Learning in public`;
 
   const bio = [
-    `I'm building toward a career as ${an} ${name}. ${career.oneLiner}`,
+    `I'm building toward a career as ${an} ${name}. ${descriptor}`,
     `Right now I'm focused on ${humanList(focusSkills)}, and I'm documenting the journey as I build ${project}.`,
     `Always glad to connect with people learning the same things — or hiring for them.`,
   ].join("\n\n");
