@@ -10,6 +10,7 @@ interface ResultHeroProps {
   subPath: SubPath | null;
   matchValue: number; // 0..1
   onDownload: () => void;
+  onShare: () => void;
 }
 
 function matchLabel(v: number): string {
@@ -19,7 +20,13 @@ function matchLabel(v: number): string {
   return "Worth a look";
 }
 
-export function ResultHero({ career, subPath, matchValue, onDownload }: ResultHeroProps) {
+export function ResultHero({
+  career,
+  subPath,
+  matchValue,
+  onDownload,
+  onShare,
+}: ResultHeroProps) {
   return (
     <div className="card animate-fade-up mt-2 overflow-hidden">
       <div className="bg-gradient-to-br from-soft-green via-soft-purple to-soft-pink p-6 sm:p-8">
@@ -52,6 +59,10 @@ export function ResultHero({ career, subPath, matchValue, onDownload }: ResultHe
             <DownloadIcon className="h-4 w-4" />
             Download as PDF
           </button>
+          <button onClick={onShare} className="btn-secondary pressable">
+            <ShareIcon className="h-4 w-4" />
+            Share
+          </button>
         </div>
       </div>
     </div>
@@ -62,6 +73,14 @@ function DownloadIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

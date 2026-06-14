@@ -22,6 +22,7 @@ import type { NavSection } from "./components/ResultNav";
 import { Confetti } from "./components/Confetti";
 import { SubPathChooser } from "./components/SubPathChooser";
 import { MatchBreakdown } from "./components/MatchBreakdown";
+import { ShareResult } from "./components/ShareResult";
 import { NextStep } from "./components/NextStep";
 import { EmailCapture } from "./components/EmailCapture";
 import type { UserAnswers } from "./data/types";
@@ -36,6 +37,7 @@ import { rankSubPaths, subPathReason } from "./engine/subpath";
 import { explainMatch } from "./engine/breakdown";
 import { aiGuideFor } from "./data/aiGuides";
 import { downloadResultPdf } from "./pdf";
+import { readSharedAnswers } from "./shareLink";
 import {
   clearProgress,
   loadAnswers,
@@ -55,8 +57,13 @@ type Stage =
 type Answers = Record<string, unknown>;
 
 export default function App() {
-  const [stage, setStage] = useState<Stage>("landing");
-  const [answers, setAnswers] = useState<Answers>(() => loadAnswers() ?? {});
+  // A shared link (?r=…) reconstructs someone's result on open.
+  const shared = useMemo(() => readSharedAnswers(), []);
+
+  const [stage, setStage] = useState<Stage>(shared ? "result" : "landing");
+  const [answers, setAnswers] = useState<Answers>(
+    () => (shared as Answers | null) ?? loadAnswers() ?? {},
+  );
   const [index, setIndex] = useState<number>(() => loadQuestionIndex());
 
   const hasProgress = index > 0 || Object.keys(answers).length > 0;
@@ -74,8 +81,16 @@ export default function App() {
     setAnswers((prev) => ({ ...prev, [field]: value }));
   }
 
+  // Drop a shared-link param so a reload doesn't resurrect someone else's result.
+  function clearShareParam() {
+    if (typeof window !== "undefined" && window.location.search) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }
+
   function handleStartFresh() {
     clearProgress();
+    clearShareParam();
     setAnswers({});
     setIndex(0);
     setStage("assessment");
@@ -87,6 +102,7 @@ export default function App() {
 
   function handleStartOver() {
     clearProgress();
+    clearShareParam();
     setAnswers({});
     setIndex(0);
     setStage("landing");
@@ -269,6 +285,7 @@ function Result({
         subPath={selectedSub}
         matchValue={scored.total}
         onDownload={handleDownload}
+        onShare={() => jump("share")}
       />
 
       <ResultNav sections={RESULT_SECTIONS} activeId={activeId} onJump={jump} />
@@ -305,6 +322,14 @@ function Result({
       </div>
       <div id="branding" className="scroll-mt-24">
         <BrandingCoach branding={branding} />
+      </div>
+      <div id="share" className="scroll-mt-24">
+        <ShareResult
+          answers={answers}
+          career={scored.career}
+          subPath={selectedSub}
+          matchValue={scored.total}
+        />
       </div>
       <EmailCapture careerId={scored.career.id} />
 
@@ -344,6 +369,7 @@ const RESULT_SECTIONS: NavSection[] = [
   { id: "curriculum", label: "Curriculum" },
   { id: "ai", label: "AI" },
   { id: "branding", label: "Branding" },
+  { id: "share", label: "Share" },
 ];
 
 function DownloadIcon({ className }: { className?: string }) {
