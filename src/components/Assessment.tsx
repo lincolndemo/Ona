@@ -4,6 +4,7 @@
 
 import { QUESTIONS, TOTAL_QUESTIONS, isAnswered } from "../data/questions";
 import { QuestionCard } from "./QuestionCard";
+import { OnaMark } from "./OnaMark";
 
 interface AssessmentProps {
   answers: Record<string, unknown>;
@@ -67,6 +68,21 @@ export function Assessment({
 
   return (
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-8">
+      {/* Header — always a way home (progress is saved) */}
+      <div className="mb-8 flex items-center justify-between">
+        <button
+          onClick={onExit}
+          className="flex items-center gap-2.5"
+          aria-label="Back to home"
+        >
+          <OnaMark className="h-7 w-7 text-navy" />
+          <span className="text-lg font-bold tracking-tight text-navy">Ona</span>
+        </button>
+        <button onClick={onExit} className="btn-ghost !px-4 !py-2">
+          Save & exit
+        </button>
+      </div>
+
       {/* Progress */}
       <div className="mb-10">
         <div className="mb-2.5 flex items-center justify-between font-mono text-xs uppercase tracking-wider">

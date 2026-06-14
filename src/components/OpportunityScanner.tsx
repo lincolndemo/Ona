@@ -9,12 +9,13 @@ import type { OpportunityFilter } from "../data/opportunities";
 import type { Opportunity, OpportunityType, UserAnswers } from "../data/types";
 import { isComplete } from "../data/questions";
 import { topMatch } from "../engine/match";
-import { OnaMark } from "./OnaMark";
+import { PageNav } from "./PageNav";
 
 interface OpportunityScannerProps {
   answers: Record<string, unknown>;
   onHome: () => void;
   onStart: () => void;
+  onOpenBranding: () => void;
 }
 
 const FILTERS: { value: OpportunityFilter; label: string }[] = [
@@ -46,6 +47,7 @@ export function OpportunityScanner({
   answers,
   onHome,
   onStart,
+  onOpenBranding,
 }: OpportunityScannerProps) {
   const completed = isComplete(answers);
   const matched = useMemo(
@@ -64,16 +66,7 @@ export function OpportunityScanner({
 
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-6 pb-16">
-      {/* Header */}
-      <header className="flex items-center justify-between py-6">
-        <button onClick={onHome} className="flex items-center gap-2.5" aria-label="Back to home">
-          <OnaMark className="h-8 w-8 text-navy" />
-          <span className="text-xl font-bold tracking-tight text-navy">Ona</span>
-        </button>
-        <button onClick={onHome} className="btn-ghost !px-4 !py-2">
-          ← Home
-        </button>
-      </header>
+      <PageNav onHome={onHome} onOpenBranding={onOpenBranding} active="opportunities" />
 
       <h1 className="text-4xl font-bold tracking-tight text-black">
         Opportunity scanner

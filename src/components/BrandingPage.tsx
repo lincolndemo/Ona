@@ -12,12 +12,13 @@ import { topMatch } from "../engine/match";
 import { buildBranding } from "../engine/branding";
 import type { UserAnswers } from "../data/types";
 import { BrandingCoach } from "./BrandingCoach";
-import { OnaMark } from "./OnaMark";
+import { PageNav } from "./PageNav";
 
 interface BrandingPageProps {
   answers: Record<string, unknown>;
   onHome: () => void;
   onStart: () => void;
+  onOpenOpportunities: () => void;
 }
 
 // A preview gap when there is no assessment: treat every prerequisite as still
@@ -31,7 +32,12 @@ function previewGap(careerId: string): SkillsGap {
   };
 }
 
-export function BrandingPage({ answers, onHome, onStart }: BrandingPageProps) {
+export function BrandingPage({
+  answers,
+  onHome,
+  onStart,
+  onOpenOpportunities,
+}: BrandingPageProps) {
   const completed = isComplete(answers);
 
   // Their matched career, if the assessment is done — used as the default pick.
@@ -56,16 +62,7 @@ export function BrandingPage({ answers, onHome, onStart }: BrandingPageProps) {
 
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-6">
-      {/* Header */}
-      <header className="flex items-center justify-between py-6">
-        <button onClick={onHome} className="flex items-center gap-2.5" aria-label="Back to home">
-          <OnaMark className="h-8 w-8 text-navy" />
-          <span className="text-xl font-bold tracking-tight text-navy">Ona</span>
-        </button>
-        <button onClick={onHome} className="btn-ghost !px-4 !py-2">
-          ← Home
-        </button>
-      </header>
+      <PageNav onHome={onHome} onOpenOpportunities={onOpenOpportunities} active="branding" />
 
       <h1 className="text-4xl font-bold tracking-tight text-black">
         Personal branding coach

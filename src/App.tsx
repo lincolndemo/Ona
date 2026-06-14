@@ -13,6 +13,7 @@ import { Curriculum } from "./components/Curriculum";
 import { BrandingCoach } from "./components/BrandingCoach";
 import { BrandingPage } from "./components/BrandingPage";
 import { OpportunityScanner } from "./components/OpportunityScanner";
+import { PageNav } from "./components/PageNav";
 import { NextStep } from "./components/NextStep";
 import { EmailCapture } from "./components/EmailCapture";
 import type { UserAnswers } from "./data/types";
@@ -97,6 +98,7 @@ export default function App() {
         answers={answers}
         onHome={() => setStage("landing")}
         onStart={handleStartFresh}
+        onOpenOpportunities={() => setStage("opportunities")}
       />
     );
   }
@@ -107,6 +109,7 @@ export default function App() {
         answers={answers}
         onHome={() => setStage("landing")}
         onStart={handleStartFresh}
+        onOpenBranding={() => setStage("branding")}
       />
     );
   }
@@ -124,15 +127,29 @@ export default function App() {
     );
   }
 
-  return <Result answers={answers as unknown as UserAnswers} onStartOver={handleStartOver} />;
+  return (
+    <Result
+      answers={answers as unknown as UserAnswers}
+      onStartOver={handleStartOver}
+      onHome={() => setStage("landing")}
+      onOpenBranding={() => setStage("branding")}
+      onOpenOpportunities={() => setStage("opportunities")}
+    />
+  );
 }
 
 function Result({
   answers,
   onStartOver,
+  onHome,
+  onOpenBranding,
+  onOpenOpportunities,
 }: {
   answers: UserAnswers;
   onStartOver: () => void;
+  onHome: () => void;
+  onOpenBranding: () => void;
+  onOpenOpportunities: () => void;
 }) {
   // Deterministic: same answers always yield the same match, reasoning, gap,
   // flags, and roadmap.
@@ -168,7 +185,12 @@ function Result({
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
+    <div className="mx-auto max-w-2xl px-6 pb-10">
+      <PageNav
+        onHome={onHome}
+        onOpenOpportunities={onOpenOpportunities}
+        onOpenBranding={onOpenBranding}
+      />
       <div className="mb-6 flex justify-end">
         <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
           <DownloadIcon className="h-4 w-4" />
@@ -185,10 +207,15 @@ function Result({
       <EmailCapture careerId={scored.career.id} />
 
       <div className="mt-14 flex flex-col items-center gap-4 border-t border-black/10 pt-6">
-        <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
-          <DownloadIcon className="h-4 w-4" />
-          Download as PDF
-        </button>
+        <div className="flex flex-wrap justify-center gap-3">
+          <button onClick={handleDownload} className="btn-secondary !px-5 !py-2.5">
+            <DownloadIcon className="h-4 w-4" />
+            Download as PDF
+          </button>
+          <button onClick={onHome} className="btn-primary !px-5 !py-2.5">
+            Back to home
+          </button>
+        </div>
         <button
           type="button"
           onClick={onStartOver}
