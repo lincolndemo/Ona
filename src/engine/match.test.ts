@@ -32,6 +32,19 @@ describe("matching engine", () => {
     expect(topMatch(ENGINEER).career.id).toBe("software_developer");
   });
 
+  it("suggests Data Analyst to an analytical graduate who prefers technical work", () => {
+    const analyticalGraduate = answers({
+      situation: "graduate",
+      excitingActivities: ["analysing"],
+      bestStatement: "analysing",
+      rolePreference: "technical",
+      toolsUsed: [],
+      industries: [],
+      buildPreference: "not_sure",
+    });
+    expect(topMatch(analyticalGraduate).career.id).toBe("data_analyst");
+  });
+
   it("keeps every total score within 0..1", () => {
     for (const career of CAREERS) {
       const { total } = scoreCareer(ENGINEER, career);

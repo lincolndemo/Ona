@@ -18,6 +18,8 @@ export const CAREERS: Career[] = [
       "teacher",
       "civil_servant",
       "engineer",
+      "graduate",
+      "university_student",
     ],
     difficulty: "medium",
     baseMonthsAt10hrs: 4,
