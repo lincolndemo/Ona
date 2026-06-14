@@ -19,7 +19,6 @@ function overlap<T>(a: T[] = [], b: T[] = []): number {
 export function scoreSubPath(user: UserAnswers, sub: SubPath): number {
   let score = 0;
   score += 3 * overlap(user.industries, sub.industries); // strongest signal
-  if (sub.buildPreference?.includes(user.buildPreference)) score += 3;
   if (sub.situations?.includes(user.situation)) score += 2;
   score += 1.5 * overlap(user.motivationsTop3, sub.motivations);
   score += 1 * overlap(user.excitingActivities, sub.thinkingStyles);
@@ -50,14 +49,6 @@ const INDUSTRY_LABELS: Record<string, string> = {
   other: "your chosen field",
 };
 
-const BUILD_LABELS: Record<string, string> = {
-  web: "building websites and web apps",
-  mobile: "building mobile apps",
-  backend: "servers, APIs and data",
-  people: "working with people, content and ideas",
-  not_sure: "a bit of everything",
-};
-
 const SITUATION_LABELS: Record<string, string> = {
   healthcare_professional: "healthcare professional",
   banker: "banker",
@@ -75,9 +66,6 @@ export function subPathReason(user: UserAnswers, sub: SubPath): string {
   const industryMatch = (user.industries ?? []).find((i) => sub.industries?.includes(i));
   if (industryMatch) {
     return `Your interest in ${INDUSTRY_LABELS[industryMatch] ?? "this field"} points you here.`;
-  }
-  if (sub.buildPreference?.includes(user.buildPreference) && user.buildPreference !== "not_sure") {
-    return `You said you're drawn to ${BUILD_LABELS[user.buildPreference]}, which fits this focus.`;
   }
   if (sub.situations?.includes(user.situation)) {
     return `Your background as a ${SITUATION_LABELS[user.situation] ?? "professional"} transfers straight into this niche.`;

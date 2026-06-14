@@ -30,7 +30,7 @@ export const CAREERS: Career[] = [
       "Power BI",
       "basic SQL",
     ],
-    tools: ["Excel", "SQL", "Power BI"],
+    tools: ["Excel", "SQL", "Power BI", "Tableau"],
     realityCheck: {
       typicalDay:
         "Most days you take a question from a manager, find the data that answers it, clean it, and build a chart or short report that makes the answer obvious. A good part of the week goes into preparing data before any analysis begins.",
@@ -70,7 +70,7 @@ export const CAREERS: Career[] = [
       "Excel",
       "basic data analysis",
     ],
-    tools: ["Excel", "SQL"],
+    tools: ["Excel", "SQL", "Jira"],
     realityCheck: {
       typicalDay:
         "You spend the week talking to business teams to understand what they need, then writing that up clearly so a technical team can build it. Meetings and documentation take more of your time than data does.",
@@ -104,7 +104,7 @@ export const CAREERS: Career[] = [
       "version control",
       "one core language",
     ],
-    tools: ["Python", "GitHub"],
+    tools: ["Python", "GitHub", "VS Code", "Command line"],
     realityCheck: {
       typicalDay:
         "You spend most of the day writing and testing code, reading other people's code, and fixing things that break. Real progress comes in quiet stretches of focused work rather than meetings.",
@@ -139,7 +139,7 @@ export const CAREERS: Career[] = [
       "a cloud platform",
       "scripting",
     ],
-    tools: ["Python", "GitHub"],
+    tools: ["Python", "GitHub", "Command line"],
     realityCheck: {
       typicalDay:
         "You set up and maintain the servers and services that applications run on, automate the repetitive parts, and respond when something goes down. Some days are calm, and some are spent firefighting.",
@@ -172,7 +172,7 @@ export const CAREERS: Career[] = [
       "security fundamentals",
       "threat analysis",
     ],
-    tools: ["Python"],
+    tools: ["Python", "Command line"],
     realityCheck: {
       typicalDay:
         "You watch for threats, investigate alerts, and check systems for weaknesses before attackers find them. The work mixes routine monitoring with sudden, urgent incidents.",
@@ -212,7 +212,7 @@ export const CAREERS: Career[] = [
       "stakeholder communication",
       "basic data literacy",
     ],
-    tools: ["Excel", "Canva"],
+    tools: ["Excel", "Canva", "Jira", "Notion"],
     realityCheck: {
       typicalDay:
         "You spend the week deciding what the product should do next, talking to users and the team, and keeping everyone moving towards the same goal. You write a lot, and you sit in many conversations.",
@@ -324,7 +324,7 @@ export const CAREERS: Career[] = [
       "Excel",
       "basic data visualisation",
     ],
-    tools: ["Excel", "Canva", "Google Workspace"],
+    tools: ["Excel", "Canva", "Google Workspace", "Google Analytics", "WordPress"],
     realityCheck: {
       typicalDay:
         "You measure how campaigns perform, find what is working, and advise on where to spend next. The week mixes pulling numbers with explaining them to people who decide budgets.",
@@ -363,7 +363,7 @@ export const CAREERS: Career[] = [
       "prototyping",
       "design tools",
     ],
-    tools: ["Canva"],
+    tools: ["Canva", "Figma"],
     realityCheck: {
       typicalDay:
         "You research how people use a product, sketch and design screens, and test them with real users before they are built. The week moves between quiet design work and conversations with users and developers.",
@@ -403,7 +403,7 @@ export const CAREERS: Career[] = [
       "logical thinking",
       "AI tool fluency",
     ],
-    tools: ["ChatGPT", "Excel"],
+    tools: ["ChatGPT", "Excel", "Make/Zapier"],
     realityCheck: {
       typicalDay:
         "You find repetitive tasks in a business and build workflows that handle them without a person. Much of the week is mapping how work flows now and connecting tools so it flows by itself.",
@@ -444,7 +444,7 @@ export const CAREERS: Career[] = [
       "basic SQL",
       "learning measurement",
     ],
-    tools: ["Excel", "Power BI", "SQL"],
+    tools: ["Excel", "Power BI", "SQL", "Tableau"],
     realityCheck: {
       typicalDay:
         "You spend much of the week pulling data from learning platforms, cleaning it, and building reports that show what is working in a programme and what is not. The work joins teaching insight with data skill.",

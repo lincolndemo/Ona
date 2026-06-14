@@ -15,9 +15,9 @@ describe("sub-path picker", () => {
     }
   });
 
-  it("picks the mobile track when the person wants to build mobile apps", () => {
-    const user = answers({ buildPreference: "mobile", rolePreference: "technical" });
-    expect(pickSubPath(user, dev)?.id).toBe("mobile");
+  it("offers front-end, back-end and mobile as developer specialisations", () => {
+    const ids = subPathsFor("software_developer").map((s) => s.id);
+    expect(ids).toEqual(expect.arrayContaining(["frontend", "backend", "mobile"]));
   });
 
   it("picks healthcare analytics for a healthcare background interested in health", () => {

@@ -187,5 +187,5 @@ export interface UserAnswers {
   bestStatement: ThinkingStyle;
   rolePreference: RoleOrientation;
   industries: string[]; // sectors the person is drawn to
-  buildPreference: string; // what they most want to build/work on
+  buildPreference?: string; // reserved; no longer asked (track is chosen at the result)
 }
