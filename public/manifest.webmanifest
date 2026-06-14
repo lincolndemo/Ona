@@ -1,0 +1,17 @@
+{
+  "name": "Ona — Find your path",
+  "short_name": "Ona",
+  "description": "A career decision tool: answer a short assessment and get one recommended technology career, a plan, and a first step.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbfbfd",
+  "theme_color": "#fbfbfd",
+  "icons": [
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
