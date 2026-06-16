@@ -38,6 +38,7 @@ import { explainMatch } from "./engine/breakdown";
 import { aiGuideFor } from "./data/aiGuides";
 import { downloadResultPdf } from "./pdf";
 import { readSharedAnswers } from "./shareLink";
+import { recordAssessment, fetchAssessmentCount, COUNT_THRESHOLD } from "./stats";
 import {
   clearProgress,
   loadAnswers,
@@ -98,6 +99,13 @@ export default function App() {
 
   function handleResume() {
     setStage("assessment");
+  }
+
+  // Fires once when the assessment is finished (not on shared-link loads or
+  // refreshes), so the platform counter reflects real assessments generated.
+  function handleComplete() {
+    void recordAssessment();
+    setStage("result");
   }
 
   function handleStartOver() {
@@ -162,7 +170,7 @@ export default function App() {
         index={index}
         onAnswer={handleAnswer}
         onIndexChange={setIndex}
-        onComplete={() => setStage("result")}
+        onComplete={handleComplete}
         onExit={() => setStage("landing")}
       />
     );
@@ -243,6 +251,12 @@ function Result({
       alert("Sorry — the PDF could not be generated. Please try again.");
     }
   }
+
+  // Platform assessment count, shown quietly once it's meaningful.
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    fetchAssessmentCount().then(setCount);
+  }, []);
 
   // Scroll-spy: highlight the section currently in view.
   const [activeId, setActiveId] = useState(RESULT_SECTIONS[0].id);
@@ -334,6 +348,11 @@ function Result({
       <EmailCapture careerId={scored.career.id} />
 
       <div className="mt-14 flex flex-col items-center gap-4 border-t border-black/10 pt-6">
+        {count !== null && count >= COUNT_THRESHOLD && (
+          <p className="font-mono text-xs uppercase tracking-wider text-navy">
+            You're one of {count.toLocaleString()} who've found their path
+          </p>
+        )}
         <button
           type="button"
           onClick={onStartOver}

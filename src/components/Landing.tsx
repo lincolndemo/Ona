@@ -2,8 +2,10 @@
 // row, a mono eyebrow, a large Figtree headline, mono buttons, and a soft glass
 // graphic echoing the template's iridescent motif.
 
+import { useEffect, useState } from "react";
 import { PathChooser } from "./PathChooser";
 import { OnaMark } from "./OnaMark";
+import { fetchAssessmentCount, COUNT_THRESHOLD } from "../stats";
 
 interface LandingProps {
   onStart: () => void;
@@ -22,6 +24,11 @@ export function Landing({
   onOpenOpportunities,
   onOpenAi,
 }: LandingProps) {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    fetchAssessmentCount().then(setCount);
+  }, []);
+
   return (
     <div className="mx-auto min-h-screen max-w-6xl px-6">
       {/* Brand row */}
@@ -124,6 +131,15 @@ export function Landing({
           >
             ~5 minutes · No sign-up to see your result
           </p>
+
+          {count !== null && count >= COUNT_THRESHOLD && (
+            <p
+              className="mt-3 animate-fade-up font-mono text-xs uppercase tracking-wider text-navy"
+              style={{ animationDelay: "0.42s" }}
+            >
+              {count.toLocaleString()} assessments taken
+            </p>
+          )}
         </div>
 
         {/* Animated "choosing a path" scene */}

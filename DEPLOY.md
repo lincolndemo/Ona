@@ -42,6 +42,30 @@ vercel --prod     # deploy to production
 After a new deploy, the app updates itself the next time it's opened online (the
 service worker fetches the new version). To force it, close and reopen the app.
 
+## Counting assessments (optional)
+
+Ona can count how many assessments have been generated platform-wide via a tiny
+serverless function (`api/assessments.js`) backed by a free Upstash Redis store.
+
+1. In your Vercel project: **Storage → Create Database → Upstash Redis** (free
+   tier). Vercel automatically adds `UPSTASH_REDIS_REST_URL` and
+   `UPSTASH_REDIS_REST_TOKEN` to the project's environment.
+2. **Redeploy.**
+3. Read the live total any time:
+   - Visit `https://your-app.vercel.app/api/assessments` → `{ "count": 123 }`, or
+   - Open the Upstash dashboard and look at the `ona:assessments` key.
+4. Once the count passes 25, it also shows quietly on the landing page as social
+   proof (tune the threshold in `src/components/Landing.tsx`).
+
+Until Upstash is configured the endpoint returns `{ "count": null }` and the app
+behaves exactly as before — nothing breaks. The counter increments once per
+completed assessment (not on shared-link visits or refreshes), and stores **no
+personal data** — just a number.
+
+> Want the *email-update* addresses too? Set `VITE_LEAD_ENDPOINT` (see
+> `.env.example`) to a form endpoint (Formspree/Web3Forms) or another serverless
+> function — otherwise those emails only live in each visitor's own browser.
+
 ## What this is and isn't
 
 - ✅ Free, installable, offline-capable, shareable by link, instant updates.
