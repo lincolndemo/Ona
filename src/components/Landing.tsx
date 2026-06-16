@@ -133,12 +133,18 @@ export function Landing({
           </p>
 
           {count !== null && count >= COUNT_THRESHOLD && (
-            <p
-              className="mt-3 animate-fade-up font-mono text-xs uppercase tracking-wider text-navy"
+            <div
+              className="mt-4 inline-flex animate-fade-up items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-2 shadow-[0px_6px_18.6px_0px_#d0d0d050] backdrop-blur"
               style={{ animationDelay: "0.42s" }}
             >
-              {count.toLocaleString()} assessments taken
-            </p>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="font-mono text-xs uppercase tracking-wider text-zinc-700">
+                {count.toLocaleString()} assessments taken
+              </span>
+            </div>
           )}
         </div>
 

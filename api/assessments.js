@@ -16,6 +16,10 @@ const REDIS_TOKEN =
   process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 const KEY = "ona:assessments";
 
+// Display baseline: the counter starts here and the real (Redis) completions are
+// added on top. Set to 0 once you want only true counts.
+const BASE = 130;
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -29,8 +33,8 @@ export default async function handler(req, res) {
       headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
     });
     const data = await response.json(); // { result: number | string | null }
-    const count = data.result == null ? 0 : Number(data.result);
-    return res.status(200).json({ count });
+    const raw = data.result == null ? 0 : Number(data.result);
+    return res.status(200).json({ count: BASE + raw });
   } catch {
     return res.status(200).json({ count: null });
   }

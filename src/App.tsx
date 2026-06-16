@@ -349,9 +349,15 @@ function Result({
 
       <div className="mt-14 flex flex-col items-center gap-4 border-t border-black/10 pt-6">
         {count !== null && count >= COUNT_THRESHOLD && (
-          <p className="font-mono text-xs uppercase tracking-wider text-navy">
-            You're one of {count.toLocaleString()} who've found their path
-          </p>
+          <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 shadow-[0px_6px_18.6px_0px_#d0d0d050]">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="font-mono text-xs uppercase tracking-wider text-zinc-700">
+              You're one of {count.toLocaleString()} who've found their path
+            </span>
+          </div>
         )}
         <button
           type="button"
